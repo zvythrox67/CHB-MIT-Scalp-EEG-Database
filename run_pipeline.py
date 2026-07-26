@@ -117,5 +117,16 @@ def build_feature_table():
     print(f"\nSaved feature table: {OUTPUT_CSV} ({df.shape[0]} rows, {df.shape[1]} columns)")
     return df
 
- 
+def chronological_train_test_split(df, n_test_files):
+    file_names_in_order = list(dict.fromkeys(df["source_file"]))
+    n_test_files = min(n_test_files, max(len(file_names_in_order) - 1, 1))
+    test_files = set(file_names_in_order[-n_test_files:])
+    
+    train_df = df[~df["source_file"].isin(test_files)]
+    test_df = df[df["source_file"].isin(test_files)]
+
+    print(f"\nTrain files: {sorted(set(train_df['source_file']))}")
+    print(f"Test files:  {sorted(test_files)}")
+
+    return [(train_df, test_df)]
 
