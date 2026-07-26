@@ -19,3 +19,15 @@ WINDOW_OVERLAP = 0.0
 OUTPUT_CSV = "features_all.csv"
 N_TEST_FILES_SINGLE_PATIENT = 3
 N_SPLITS = 5
+
+def find_patient_folders(root_dir):
+    pattern = re.compile(r"^chb\d+$")
+    patient_dirs = [p for p in root_dir.iterdir() if p.is_dir() and pattern.match(p.name)]
+    patient_dirs.sort(key=lambda p: p.name)
+    
+    if not patient_dirs:
+        raise FileNotFoundError(
+            f"No chbNN folders found under {root_dir}. "
+            f"Check ROOT_DIR points at the folder that CONTAINS chb01, chb02, etc."
+        )
+    return {p.name: p for p in patient_dirs}
