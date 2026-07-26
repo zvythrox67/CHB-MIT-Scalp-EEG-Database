@@ -65,3 +65,41 @@ def window_and_label(raw, seizure_intervals, window_seconds, overlap):
     
     return windows, labels
 
+def process_patient(patient_id, patient_dir):
+    summary_file = patient_dir / f"{patient_id}-summary.txt"
+    if not summary_file.exists():
+        raise FileNotFoundError(f"Missing summary file: {summary_file}")
+    
+    seizures_by_file = parse_summary_file(summary_file)
+    edf_files = sorted(patient_dir.glob(f"{patient_id}_*.edf"))
+    
+    if not edf_files:
+        raise FileNotFoundError(f"No .edf files found in {patient_dir}")
+    
+    rows = []
+    
+    for edf_path in edf_files:
+        fname = edf_path.name
+        print(f" Processing {fname}...")
+        
+        raw = mne.io.read_raw_edf(edf_path, preload = True, verbose = False)
+        preprocess_raw(raw)
+        
+        seizure_intervals = seizures_by_file.get(fname, [])
+        windows, labels = window_and_label(raw, seizure_intervals, WINDOW_SECONDS, WINDOW_OVERLAP)
+        
+        sfreq = raw.info["sfreq"]
+        channel_names = raw.info["ch_names"]
+        
+        for window, label in zip(windows, labels):
+            feats = extract_window_features(window, sfreq, channel_names)
+            feats["label"] = label
+            feats["source_file"] = fname
+            feats["patient_id"] = patient_id
+            rows.append(feats)
+        
+        n_seizure_windows = sum(labels)
+        print(f"    -> {len(windows)} windows, {n_seizure_windows} labeled seizure")
+        
+    return rows
+
