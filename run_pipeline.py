@@ -103,3 +103,19 @@ def process_patient(patient_id, patient_dir):
         
     return rows
 
+def build_feature_table():
+    patient_folders = find_patient_folders(ROOT_DIR)
+    print(f"Found {len(patient_folders)} patient(s): {list(patient_folders.keys())}\n")
+
+    all_rows = []
+    for patient_id, patient_dir in patient_folders.items():
+        print(f"Patient {patient_id}:")
+        all_rows.extend(process_patient(patient_id, patient_dir))
+
+    df = pd.DataFrame(all_rows)
+    df.to_csv(OUTPUT_CSV, index=False)
+    print(f"\nSaved feature table: {OUTPUT_CSV} ({df.shape[0]} rows, {df.shape[1]} columns)")
+    return df
+
+ 
+
