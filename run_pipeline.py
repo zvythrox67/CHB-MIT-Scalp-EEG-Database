@@ -130,3 +130,21 @@ def chronological_train_test_split(df, n_test_files):
 
     return [(train_df, test_df)]
 
+def group_kfold_splits(df, n_splits):
+    n_patients = df["patients_id"].nunique()
+    n_splits = min(n_splits, n_patients)
+    
+    gkf = GroupKFold(n_splits = n_splits)
+    feature_cols = [c for c in df.columns if c not in ("label", "source_file", "patient_id")]
+    X = df[feature_cols].fillna(0)
+    Y = df["label"]
+    groups = df["patient_id"]
+    
+    splits = []
+    for train_idx, test_idx in gkf.split(X, y, groups):
+        train_df = df.iloc[train_idx]
+        test_df = df.iloc[test_idx]
+        splits.append((train_df, test_df))
+        
+    return splits
+
