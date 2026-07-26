@@ -141,10 +141,38 @@ def group_kfold_splits(df, n_splits):
     groups = df["patient_id"]
     
     splits = []
-    for train_idx, test_idx in gkf.split(X, y, groups):
+    for train_idx, test_idx in gkf.split(X, Y, groups):
         train_df = df.iloc[train_idx]
         test_df = df.iloc[test_idx]
         splits.append((train_df, test_df))
         
     return splits
+
+def train_and_evaluate_one_split(train_df, test_df, fold_label = ""):
+    feature_cols = [c for c in train_df.columns if c not in ("label", "source_file", "patient_id")]
+    
+    X_train = train_df[feature_cols].fillna(0)
+    y_train = train_df["label"]
+    X_test = test_df[feature_cols].fillna(0)
+    y_test = test_df["label"]
+    
+    print(f"\n{fold_label}Train: {X_train.shape[0]} windows ({y_train.sum()} seizure) | "
+          f"Test: {X_test.shape[0]} windows ({y_test.sum()} seizure)")
+    if "patient_id" in test_df.columns:
+        print(f"{fold_label}Test patients: {sorted(test_df['patient_id'].unique())}")
+        
+    clf = RandomForestClassifier(n_estimators = 200, class_weight = "balanced", random_state = 42)
+    clf.fit(X_train, y_train)
+    y_pred = clf.predict(X_test)
+    
+    precision = precision_score(y_test, y_pred, zero_division=0)
+    recall = recall_score(y_test, y_pred, zero_division=0)
+    f1 = f1_score(y_test, y_pred, zero_division=0)
+    
+    print(f"{fold_label}Precision: {precision:.3f}  Recall: {recall:.3f}  F1: {f1:.3f}")
+    print(f"{fold_label}Confusion matrix (rows=actual, cols=predicted):")
+    print(confusion_matrix(y_test, y_pred))
+    
+    return {"precision": precision, "recall": recall, "f1": f1, "clf": clf, "feature_cols": feature_cols}
+
 
