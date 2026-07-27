@@ -67,14 +67,7 @@ https://physionet.org/content/chbmit/1.0.0/
   - **Only 1 patient found:** falls back to a chronological split by recording file (train on earlier files, test on later ones) — not as rigorous as GroupKFold, but avoids leaking windows from the same seizure event across train/test.
 - Prints precision, recall, F1 (averaged across folds when using GroupKFold), confusion matrices, and the top 15 most important features
 
-## First run will likely be slow-ish
+## First run may be slow-ish
 
 Feature extraction (especially sample entropy) is the slowest step, and it scales with number of patients. If each patient has ~40 one-hour files, expect a few minutes per patient. If it's painfully slow, drop `sample_entropy` from `features.py` first — it's the most expensive one.
 
-## Next steps once this runs
-
-- Check `features_all.csv` to make sure labels look right (should be a small minority of rows = seizure) and that `patient_id` is populated correctly
-- If F1 is very low or precision/recall are 0, sanity-check `summary_parser.py` against your actual `-summary.txt` files — seizure interval parsing is the most common bug
-- Try 2-second windows vs 4-second windows
-- Try SVM or XGBoost instead of Random Forest
-- Compare single-patient (patient-specific) performance vs the pooled GroupKFold performance once you have several patients — that's a genuinely interesting research question in its own right
