@@ -12,7 +12,6 @@ https://physionet.org/content/chbmit/1.0.0/
 
 ### Citation
 
-If you publish or share results from this project, please cite the dataset as requested by PhysioNet:
 
 > Guttag, J. (2010). CHB-MIT Scalp EEG Database (version 1.0.0). PhysioNet. RRID:SCR_007345. https://doi.org/10.13026/C2K01R
 
@@ -20,9 +19,7 @@ If you publish or share results from this project, please cite the dataset as re
 
 > Pollard, T., Moody, B. E., Lehman, L., Gow, B., Fernandes, C., Xie, C., Johnson, A., Mark, R. G., & Heldt, T. (2026). PhysioNet as a global platform for biomedical research. *Nature Health*. https://doi.org/10.1038/s44360-026-00096-z
 
-Data is provided under the Open Data Commons Attribution License v1.0.
-
-## Setup
+## How to Setup:
 
 1. Put this folder next to your `CHB-MIT Scalp EEG Database` folder, so the structure looks like:
    ```
