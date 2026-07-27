@@ -2,7 +2,7 @@
 
 A machine learning pipeline that detects epileptic seizures from pediatric scalp EEG recordings. Loads raw EEG, filters it, splits it into windows, extracts time-domain, frequency-domain, entropy, and Hjorth features, then trains a Random Forest classifier to distinguish seizure from non-seizure activity.
 
-Supports 24 patients, automatically switches to proper patient-independent evaluation (GroupKFold) once you have 2+ patients downloaded.
+Supports 2 patients, automatically switches to proper patient-independent evaluation (GroupKFold) once you have 2+ patients downloaded.
 
 ## Data Source
 
